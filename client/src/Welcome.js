@@ -11,37 +11,31 @@ const Welcome = () => (
           >
             <Logo />
           </a>
-            <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://les-tilleuls.coop"
-            >
-                <Flag />
-            </a>
         </header>
         <section className="welcome__main">
             <div className="main__aside">
-                <div className="aside__circle" />
-                <SpiderWelcome />
+            <div className="aside__circle" />
+            <SpiderWelcome />
             </div>
             <div className="main__content">
                 <h1>
-                    Welcome to <strong>API Platform</strong>!
+                    Welcome to <strong>Hammer</strong>!
                 </h1>
                 <div className="main__before-starting">
                     <p>
-                        This container will host your <b>Progressive Web App</b>{' '}
+                        This is the the homepage of a <b>Progressive Web App</b>{' '}
                         ({'http:' === document.location.protocol ? <a href={`https://${document.domain}`}>HTTPS</a> : <a href={`http://${document.domain}`}>HTTP</a>}).
-                        Learn how to create your first API and generate a PWA:
                     </p>
-                    <a
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href="https://api-platform.com/docs/"
-                        className="main__button"
-                    >
-                        Get started<Arrow />
-                    </a>
+                    <p>
+                        Built using the well known {' '}
+                        <a
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href="https://api-platform.com"
+                        >
+                            API Platform
+                        </a>
+                    </p>
                 </div>
                 <div className="main__other">
                     <h2>Available services:</h2>
