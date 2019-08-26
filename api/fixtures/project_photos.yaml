@@ -1,0 +1,10 @@
+App\Entity\ProjectPhoto:
+  project_photo_1:
+    photo: "@image_2"
+    project: "@project_1"
+  project_photo_2:
+    photo: "@image_3"
+    project: "@project_1"
+  project_photo_4:
+    photo: "@image_4"
+    project: "@project_4"

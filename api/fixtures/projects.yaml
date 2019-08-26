@@ -1,0 +1,7 @@
+App\Entity\Project:
+  project_{1..3}:
+    name: <city()> <words(2, true)>
+    foreman: "@person_radu"
+  project_4:
+    name: Project4
+    foreman: "@person_daniel"
