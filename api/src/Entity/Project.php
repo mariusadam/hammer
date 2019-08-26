@@ -42,9 +42,28 @@ class Project
      */
     private $photos;
 
+    /**
+     * @var string
+     * @ORM\Column(type="text")
+     * @Assert\NotNull()
+     * @Assert\NotBlank()
+     * @Assert\Length(min="10", max="10000")
+     */
+    private $description;
+
     public function __construct()
     {
         $this->photos = new ArrayCollection();
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
     }
 
     public function addPhoto(ProjectPhoto $photo): void

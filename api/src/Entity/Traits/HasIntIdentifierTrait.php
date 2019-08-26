@@ -14,7 +14,7 @@ trait HasIntIdentifierTrait
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @ApiProperty(identifier=true)
+     * @ApiProperty(identifier=true, readable=false)
      */
     private $id;
 

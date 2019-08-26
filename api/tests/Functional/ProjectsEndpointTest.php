@@ -14,10 +14,11 @@ final class ProjectsEndpointTest extends ApiFunctionalTestCase
 
     public function testCreateProject(): void
     {
-        $foremanIri = $this->findOneIriBy(Person::class, ['name' => 'Simple worker']);
+        $foremanIri = $this->findPersonIriWithoutProject();
         $projectData = [
-            'name'    => 'Test project',
-            'foreman' => $foremanIri,
+            'name'        => 'Test project',
+            'foreman'     => $foremanIri,
+            'description' => 'This is a valid description',
         ];
 
         $response = $this->sendCreateProjectRequest($projectData);
@@ -27,6 +28,35 @@ final class ProjectsEndpointTest extends ApiFunctionalTestCase
         $this->assertProjectHasAllAttributes($project);
 
         self::assertEquals($foremanIri, $project['foreman']);
+    }
+
+    /**
+     * @dataProvider invalidDescriptionProvider
+     */
+    public function testCreateProjectWithInvalidDescriptionReturns400(string $invalidDescription): void
+    {
+        $response = $this->sendCreateProjectRequest(
+            [
+                'name'        => __METHOD__,
+                'foreman'     => $this->findPersonIriWithoutProject(),
+                'description' => $invalidDescription,
+            ]
+        );
+        self::assertResponseStatusCodeSame(400);
+        $decoded = $this->jsonDecode($response);
+        self::assertContains(
+            'description: ',
+            $this->hydraDescription($decoded)
+        );
+    }
+
+    public function invalidDescriptionProvider(): array
+    {
+        return [
+            'too long'  => [str_repeat(' ', 10001)],
+            'too short' => [str_repeat(' ', 9)],
+            'empty'     => [''],
+        ];
     }
 
     public function testProjectsListIsNotEmpty(): void
@@ -51,8 +81,17 @@ final class ProjectsEndpointTest extends ApiFunctionalTestCase
     private function assertProjectHasAllAttributes(array $project): void
     {
         self::assertArrayHasKey('@id', $project);
+        $this->assertInternalIdNotExposed($project);
         self::assertArrayHasKey('name', $project);
         self::assertArrayHasKey('foreman', $project);
         self::assertArrayHasKey('photos', $project);
+        self::assertArrayHasKey('description', $project);
+    }
+
+    private function findPersonIriWithoutProject(): string
+    {
+        $foremanIri = $this->findOneIriBy(Person::class, ['name' => 'Simple worker']);
+
+        return $foremanIri;
     }
 }

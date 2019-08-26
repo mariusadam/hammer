@@ -48,7 +48,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     },
  *     itemOperations={
  *          "get"={},
- *          "delete"={},
  *          "put"={
  *              "validation_groups"={"image-update"},
  *              "denormalization_context"={"groups"={"image-update"}}
