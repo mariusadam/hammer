@@ -1,11 +1,11 @@
 App\Entity\Person:
   person_daniel:
     name: Adam Daniel
-    email: adam.daniel@test.com
+    email: adam.daniel@fake.com
     image: "@image_1"
   person_radu:
     name: Adam Nicolae-Radu
-    email: <email()>
+    email: adam.radu@fake.com
   simple_worker:
-    name: Simple worker
-    email: <email()>
+    name: Simple worker # A worker that is not leading any projects
+    email: simple.worker@fake.com

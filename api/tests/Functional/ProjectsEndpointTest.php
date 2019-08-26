@@ -66,7 +66,7 @@ final class ProjectsEndpointTest extends ApiFunctionalTestCase
 
     public function testCanRetrieveProjectPhotos(): void
     {
-        $projectIri = $this->findOneIriBy(Project::class, ['name' => 'Project4']);
+        $projectIri = $this->findOneIriBy(Project::class, ['name' => 'ProjectLedByDaniel']);
         $response = $this->request('GET', $projectIri.'/photos');
         self::assertResponseIsSuccessful();
         $photos = $this->hydraMember($this->jsonDecode($response));

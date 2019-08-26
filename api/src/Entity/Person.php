@@ -39,6 +39,7 @@ class Person
      * @ORM\Column(type="string")
      * @Groups({"person-create", "person-read", "person-update"})
      * @Assert\NotNull()
+     * @ApiProperty(iri="http://schema.org/name")
      */
     private $name;
 
@@ -48,6 +49,7 @@ class Person
      * @Assert\Email()
      * @Assert\NotNull()
      * @Groups({"person-create", "person-read"})
+     * @ApiProperty(iri="http://schema.org/email")
      */
     private $email;
 

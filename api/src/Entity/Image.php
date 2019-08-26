@@ -64,6 +64,7 @@ class Image
      * @var string|null
      *
      * @Groups({"image-read"})
+     * @ApiProperty(iri="http://schema.org/url")
      */
     private $contentUrl;
 
@@ -97,7 +98,7 @@ class Image
      * @var string|null An alias for the image
      * @ORM\Column(type="string")
      * @Groups({"image-read", "image-create", "image-update"})
-     * @Assert\NotNull()
+     * @ApiProperty(iri="http://schema.org/name")
      */
     private $alternateName;
 

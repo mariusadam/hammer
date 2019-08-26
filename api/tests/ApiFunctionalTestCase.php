@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Tests;
 
-use App\Fixtures\ImageObjectFactory;
+use App\Fixtures\ImageFactory;
 use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -33,6 +33,47 @@ class ApiFunctionalTestCase extends WebTestCase
     /** @var KernelBrowser */
     private $browser;
 
+    /** @var Filesystem */
+    private static $filesystem;
+
+    public static function setUpBeforeClass()
+    {
+        self::$filesystem = new Filesystem();
+        // override image factory here to not require internet connection when running tests
+        ImageFactory::setImageFilePathFactory(
+            function () {
+                // because the path to the files here might be remove we need to copy
+                // the fixture file to tmp an return that path
+
+                $tmpPath = sprintf('%s.png', tempnam(sys_get_temp_dir(), 'test-image'));
+                self::$filesystem->copy(__DIR__.'/fixtures/test-image.png', $tmpPath);
+
+                return $tmpPath;
+            }
+        );
+    }
+
+    public static function tearDownAfterClass()
+    {
+        self::tearDownFixtureFiles();
+        self::$filesystem = null;
+        ImageFactory::unsetImageFactory();
+    }
+
+    public static function tearDownFixtureFiles(): void
+    {
+        $testImages = [];
+        $mediaDirectoryIterator = new \FilesystemIterator(__DIR__.'/../public/media/images');
+        foreach ($mediaDirectoryIterator as $file) {
+            assert($file instanceof \SplFileInfo);
+            if (ImageFactory::isFixture($file)) {
+                $testImages[] = $file->getRealPath();
+            }
+        }
+
+        self::$filesystem->remove($testImages);
+    }
+
     final protected function setUp()
     {
         parent::setUp();
@@ -44,21 +85,7 @@ class ApiFunctionalTestCase extends WebTestCase
     {
         parent::tearDown();
 
-        $this->tearDownFixtureFiles();
-    }
-
-    public function tearDownFixtureFiles(): void
-    {
-        $testImages = [];
-        $mediaDirectoryIterator = new \FilesystemIterator(__DIR__.'/../public/media/images');
-        foreach ($mediaDirectoryIterator as $file) {
-            assert($file instanceof \SplFileInfo);
-            if (ImageObjectFactory::isFixture($file)) {
-                $testImages[] = $file->getRealPath();
-            }
-        }
-        $filesystem = new Filesystem();
-        $filesystem->remove($testImages);
+        $this->browser = null;
     }
 
     protected function request(string $method, string $uri, array $content = [], array $headers = []): Response

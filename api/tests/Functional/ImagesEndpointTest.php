@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional;
 
 use App\Entity\Image;
-use App\Fixtures\ImageObjectFactory;
+use App\Fixtures\ImageFactory;
 use App\Tests\ApiFunctionalTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -15,7 +15,7 @@ final class ImagesEndpointTest extends ApiFunctionalTestCase
     public function testImageCanBeUploaded()
     {
         $files = [
-            'file' => ImageObjectFactory::createFixtureImageFile('testCreate'),
+            'file' => ImageFactory::createUploadedFile('testCreate'),
         ];
         $postFields = ['alternateName' => 'Alternate name for this test image'];
         $response = $this->sendCreateImageRequest($files, $postFields);
@@ -29,16 +29,16 @@ final class ImagesEndpointTest extends ApiFunctionalTestCase
 
     public function testImageNameIsUsedAsAlternateNameByDefault()
     {
-        $files = ['file' => ImageObjectFactory::createFixtureImageFile('test-alternate-default')];
+        $files = ['file' => ImageFactory::createUploadedFile('test-alternate-default')];
         $response = $this->sendCreateImageRequest($files, []);
         self::assertResponseStatusCodeSame(201);
         $image = $this->jsonDecode($response);
-        self::assertEquals('fixture-test-alternate-default.jpg', $image['alternateName']);
+        self::assertEquals('fixture-test-alternate-default.png', $image['alternateName']);
     }
 
     public function testAlternateNameCanBeUpdatedUsingJson()
     {
-        $imageIri = $this->findOneIriBy(Image::class, ['alternateName' => 'fixture-1.jpg']);
+        $imageIri = $this->findOneIriBy(Image::class, ['alternateName' => 'fixture-1.png']);
         $content = ['alternateName' => 'new name'];
 
         $response = $this->request('PUT', $imageIri, $content, []);

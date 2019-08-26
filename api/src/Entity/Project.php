@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use App\Entity\Traits\TimestampableEntity;
@@ -25,6 +26,7 @@ class Project
      * @var string Unique project name
      * @ORM\Column(type="string", unique=true)
      * @Assert\NotNull()
+     * @ApiProperty(iri="http://schema.org/name")
      */
     private $name;
 

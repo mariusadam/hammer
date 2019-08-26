@@ -21,7 +21,7 @@ final class PeopleEndpointTest extends ApiFunctionalTestCase
 
     public function testPersonEmailMustBeUnique(): void
     {
-        $response = $this->sendCreatePersonRequest('test', 'adam.daniel@test.com');
+        $response = $this->sendCreatePersonRequest('test', 'adam.daniel@fake.com');
         self::assertResponseStatusCodeSame(400);
 
         self::assertEquals(
