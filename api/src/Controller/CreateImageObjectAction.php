@@ -33,7 +33,7 @@ final class CreateImageObjectAction
 
         $imagePostData = $request->request->all() + ['alternateName' => $uploadedFile->getClientOriginalName()];
         $image = $this->denormalizeImage($imagePostData);
-        $image->setFile($uploadedFile);
+        $image->setImageFile($uploadedFile);
 
         return $image;
     }

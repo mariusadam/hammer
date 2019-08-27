@@ -6,7 +6,6 @@ namespace App\Tests\Functional;
 use App\Entity\Image;
 use App\Entity\Project;
 use App\Tests\ApiFunctionalTestCase;
-use Symfony\Component\HttpFoundation\Response;
 
 final class ProjectPhotosEndpointTest extends ApiFunctionalTestCase
 {
@@ -15,44 +14,60 @@ final class ProjectPhotosEndpointTest extends ApiFunctionalTestCase
     public function testCannotCreateProjectPhotoWithoutProject()
     {
         $photoData = [
-            'photo' => $this->findOneIriBy(Image::class, []),
+            'photo'            => $this->findOneIriBy(Image::class, []),
+            'shortDescription' => str_repeat(' ', 10),
         ];
 
-        $response = $this->sendCreatePhotoRequest($photoData);
+        $json = $this->postPhoto($photoData);
         self::assertResponseStatusCodeSame(400);
         self::assertEquals(
             'project: This value should not be null.',
-            $this->hydraDescription($this->jsonDecode($response))
+            $this->hydraDescription($json)
         );
     }
 
     public function testCannotCreateProjectPhotoWithoutImage()
     {
         $photoData = [
-            'project' => $this->findOneIriBy(Project::class, []),
+            'project'          => $this->findOneIriBy(Project::class, []),
+            'shortDescription' => str_repeat(' ', 10),
         ];
 
-        $response = $this->sendCreatePhotoRequest($photoData);
+        $json = $this->postPhoto($photoData);
         self::assertResponseStatusCodeSame(400);
         self::assertEquals(
             'photo: This value should not be null.',
-            $this->hydraDescription($this->jsonDecode($response))
+            $this->hydraDescription($json)
         );
     }
 
-    public function ttestCanCreateProjectPhoto()
+    public function testCannotCreateProjectPhotoWithInvalidShortDescription()
     {
-        $photoData = [
+        $onlyPhotoAndProject = [
             'photo'   => $this->findOneIriBy(Image::class, []),
             'project' => $this->findOneIriBy(Project::class, []),
         ];
 
-        $response = $this->sendCreatePhotoRequest($photoData);
-        self::assertResponseStatusCodeSame(201);
+        self::assertStringContainsString(
+            'shortDescription: ',
+            $this->hydraDescription($this->postPhoto($onlyPhotoAndProject))
+        );
+        self::assertResponseStatusCodeSame(400);
+
+        self::assertStringContainsString(
+            'shortDescription: This value is too short',
+            $this->hydraDescription($this->postPhoto($onlyPhotoAndProject + ['shortDescription' => 'too short']))
+        );
+        self::assertStringContainsString(
+            'shortDescription: This value is too long',
+            $this->hydraDescription(
+                $this->postPhoto($onlyPhotoAndProject + ['shortDescription' => str_repeat(' ', 10000)])
+            )
+        );
     }
 
-    private function sendCreatePhotoRequest(array $photoData): Response
+    private function postPhoto(array $photoData): array
     {
-        return $this->request('POST', self::ENDPOINT_PROJECT_PHOTOS, $photoData);
+        return $this->jsonDecode($this->request('POST', self::ENDPOINT_PROJECT_PHOTOS, $photoData));
     }
 }

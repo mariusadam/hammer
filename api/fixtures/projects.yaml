@@ -2,8 +2,12 @@ App\Entity\Project:
   ProjectLedByRadu:
     name: ProjectLedByRadu
     foreman: "@person_radu"
-    description: <randomHtml()>
+    description: Project led by Radu
   ProjectLedByDaniel:
     name: ProjectLedByDaniel
     foreman: "@person_daniel"
-    description: <randomHtml()>
+    description: Project led by Daniel
+  dummy_project_{1..7}:
+    name: Project<current()>
+    foreman: "@dummy_person_<current()>"
+    description: Dummy project led by dummy person <current()>

@@ -24,6 +24,7 @@ const myApiDocumentationParser = entrypoint => parseHydraDocumentation(entrypoin
 
         const images = api.resources.find(({name}) => 'images' === name);
         const contentUrl = images.fields.find(f => 'contentUrl' === f.name);
+        console.log(images.fields);
         contentUrl.field = props => (
             <ImageField {...props} source="contentUrl"/>
         );
@@ -32,6 +33,7 @@ const myApiDocumentationParser = entrypoint => parseHydraDocumentation(entrypoin
                 <ImageField source="contentUrl"/>
             </ImageInput>
         );
+
         // contentUrl.normalizeData = value => {
         //     if (value && value.rawFile instanceof File) {
         //         const body = new FormData();

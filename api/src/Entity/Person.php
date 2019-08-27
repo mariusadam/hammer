@@ -15,15 +15,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiResource(
- *     normalizationContext={"groups"={"person-read"}},
+ *     normalizationContext={"groups"={"person:read"}},
  *     itemOperations={
  *          "get"={},
  *          "delete"={},
- *          "put"={"denormalization_context"={"groups"={"person-update"}}}
+ *          "put"={"denormalization_context"={"groups"={"person:update"}}}
  *     },
  *     collectionOperations={
  *          "get"={},
- *          "post"={"denormalization_context"={"groups"={"person-create"}}}
+ *          "post"={"denormalization_context"={"groups"={"person:create"}}}
  *     }
  * )
  * @ORM\Entity()
@@ -37,7 +37,7 @@ class Person
      * @var string The name of the person
      *
      * @ORM\Column(type="string")
-     * @Groups({"person-create", "person-read", "person-update"})
+     * @Groups({"person:create", "person:read", "person:update"})
      * @Assert\NotNull()
      * @ApiProperty(iri="http://schema.org/name")
      */
@@ -48,15 +48,15 @@ class Person
      * @ORM\Column(type="string", unique=true)
      * @Assert\Email()
      * @Assert\NotNull()
-     * @Groups({"person-create", "person-read"})
+     * @Groups({"person:create", "person:read"})
      * @ApiProperty(iri="http://schema.org/email")
      */
     private $email;
 
     /**
      * @var Collection Projects that this person was/is in charge of
-     * @ORM\OneToMany(targetEntity="Project", mappedBy="foreman")
-     * @Groups({"person-create", "person-read", "person-update"})
+     * @ORM\OneToMany(targetEntity="Project", mappedBy="foreman", cascade={"persist"})
+     * @Groups({"person:create", "person:read", "person:update"})
      */
     private $ledProjects;
 
@@ -65,7 +65,7 @@ class Person
      * @ORM\ManyToOne(targetEntity="Image")
      * @ORM\JoinColumn(nullable=true)
      * @ApiProperty(iri="http://schema.org/ImageObject")
-     * @Groups({"person-read", "person-create", "person-update"})
+     * @Groups({"person:read", "person:create", "person:update"})
      */
     private $image;
 
@@ -79,7 +79,7 @@ class Person
         return $this->image;
     }
 
-    public function setImage(Image $image): void
+    public function setImage(?Image $image): void
     {
         $this->image = $image;
     }
@@ -107,5 +107,23 @@ class Person
     public function getLedProjects(): Collection
     {
         return $this->ledProjects;
+    }
+
+    public function removeLedProject(Project $project): void
+    {
+        if ($this->ledProjects->contains($project)) {
+            $this->ledProjects->removeElement($project);
+            $project->unAssignForeman($this);
+        }
+    }
+
+    public function addLedProject(Project $project): void
+    {
+        if ($this->ledProjects->contains($project)) {
+            return;
+        }
+
+        $this->ledProjects->add($project);
+        $project->setForeman($this);
     }
 }

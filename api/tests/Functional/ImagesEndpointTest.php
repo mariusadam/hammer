@@ -23,8 +23,8 @@ final class ImagesEndpointTest extends ApiFunctionalTestCase
 
         $image = $this->jsonDecode($response);
         self::assertNotNull($image['contentUrl']);
-        self::assertStringStartsWith('http://localhost/media/images', $image['contentUrl']);
         self::assertEquals($postFields['alternateName'], $image['alternateName']);
+        self::assertStringStartsWith('http://localhost/media/images', $image['contentUrl']);
     }
 
     public function testImageNameIsUsedAsAlternateNameByDefault()

@@ -18,7 +18,7 @@ final class ImageFactory
     {
         $image = new Image();
         $uploadedFile = self::createUploadedImage($suffix);
-        $image->setFile($uploadedFile);
+        $image->setImageFile($uploadedFile);
         $image->setAlternateName($uploadedFile->getClientOriginalName());
 
         return $image;

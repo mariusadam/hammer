@@ -6,13 +6,13 @@ namespace App\Tests\Functional;
 use App\Entity\Person;
 use App\Entity\Project;
 use App\Tests\ApiFunctionalTestCase;
-use Symfony\Component\HttpFoundation\Response;
+use foo\bar;
 
 final class ProjectsEndpointTest extends ApiFunctionalTestCase
 {
     const ENDPOINT_PROJECTS = '/projects';
 
-    public function testCreateProject(): void
+    public function testCreateProjectWithoutPhotos(): void
     {
         $foremanIri = $this->findPersonIriWithoutProject();
         $projectData = [
@@ -21,10 +21,9 @@ final class ProjectsEndpointTest extends ApiFunctionalTestCase
             'description' => 'This is a valid description',
         ];
 
-        $response = $this->sendCreateProjectRequest($projectData);
+        $project = $this->postProject($projectData);
         self::assertResponseStatusCodeSame(201);
 
-        $project = $this->jsonDecode($response);
         $this->assertProjectHasAllAttributes($project);
 
         self::assertEquals($foremanIri, $project['foreman']);
@@ -35,7 +34,7 @@ final class ProjectsEndpointTest extends ApiFunctionalTestCase
      */
     public function testCreateProjectWithInvalidDescriptionReturns400(string $invalidDescription): void
     {
-        $response = $this->sendCreateProjectRequest(
+        $json = $this->postProject(
             [
                 'name'        => __METHOD__,
                 'foreman'     => $this->findPersonIriWithoutProject(),
@@ -43,10 +42,24 @@ final class ProjectsEndpointTest extends ApiFunctionalTestCase
             ]
         );
         self::assertResponseStatusCodeSame(400);
-        $decoded = $this->jsonDecode($response);
         self::assertContains(
             'description: ',
-            $this->hydraDescription($decoded)
+            $this->hydraDescription($json)
+        );
+    }
+
+    public function testCannotCreateProjectWithoutAForeman(): void
+    {
+        $json = $this->postProject(
+            [
+                'name'        => __METHOD__,
+                'description' => str_repeat(' ', 10),
+            ]
+        );
+        self::assertResponseStatusCodeSame(400);
+        self::assertEquals(
+            'foreman: This value should not be null.',
+            $this->hydraDescription($json)
         );
     }
 
@@ -66,16 +79,73 @@ final class ProjectsEndpointTest extends ApiFunctionalTestCase
 
     public function testCanRetrieveProjectPhotos(): void
     {
-        $projectIri = $this->findOneIriBy(Project::class, ['name' => 'ProjectLedByDaniel']);
+        $projectIri = $this->findProjectIriByName('ProjectLedByDaniel');
         $response = $this->request('GET', $projectIri.'/photos');
         self::assertResponseIsSuccessful();
         $photos = $this->hydraMember($this->jsonDecode($response));
         self::assertNotEmpty($photos);
     }
 
-    private function sendCreateProjectRequest(array $projectData): Response
+    public function testRemovingProjectWillAlsoRemoveRelatedPhotosButNotForeman(): void
     {
-        return $this->request('POST', self::ENDPOINT_PROJECTS, $projectData);
+        $projectIri = $this->findProjectIriByName('Project4');
+        $project = $this->getByIri($projectIri);
+        $photosIris = $project['photos'];
+        $foremanIri = $project['foreman'];
+        $foreman = $this->getByIri($foremanIri);
+
+        self::assertContains($projectIri, $foreman['ledProjects']);
+        self::assertNotEmpty($photosIris);
+        // ensure all photos can be retrieved before the deleted
+        array_walk($photosIris, [$this, 'getByIri']);
+
+        $this->delete($projectIri);
+        $updatedForeman = $this->getByIri($foremanIri);
+        self::assertNotContains($projectIri, $updatedForeman['ledProjects']);
+
+        $this->assertNotFound($projectIri);
+        // photos should be also removed after removing the project
+        array_walk($photosIris, [$this, 'assertNotFound']);
+    }
+
+    public function testAddingNewPhotoWillUnAssignPhotosFromPreviousProject(): void
+    {
+        $projectToUpdate = $this->getByIri($this->findProjectIriByName('Project5'));
+        $projectToRemovePhotosFrom = $this->getByIri($this->findProjectIriByName('Project6'));
+        self::assertNotEmpty($projectToUpdate['photos']);
+        self::assertNotEmpty($projectToRemovePhotosFrom['photos']);
+
+        $projectToUpdate['photos'] = array_merge($projectToUpdate['photos'], $projectToRemovePhotosFrom['photos']);
+        $updatedProject = $this->putJson($projectToUpdate['@id'], $projectToUpdate);
+        $projectWithRemovedPhotos = $this->getByIri($projectToRemovePhotosFrom['@id']);
+
+        foreach ($projectToUpdate['photos'] as $photoIri) {
+            self::assertContains($photoIri, $updatedProject['photos']);
+        }
+        self::assertCount(0, $projectWithRemovedPhotos['photos']);
+    }
+
+    public function testCannotRemovePhotoBecauseThatWouldLeaveAPhotoWithoutAProject(): void
+    {
+        $projectToRemovePhotoFrom = $this->getByIri($this->findProjectIriByName('Project7'));
+        self::assertNotEmpty($projectToRemovePhotoFrom['photos']);
+        $projectToRemovePhotoFrom['photos'] = [];
+        $json = $this->putJson($projectToRemovePhotoFrom['@id'], $projectToRemovePhotoFrom);
+        self::assertResponseStatusCodeSame(400);
+        self::assertEquals(
+            'Cannot save project photos without being assigned to a project',
+            $this->hydraDescription($json)
+        );
+    }
+
+    private function postProject(array $projectData): array
+    {
+        return $this->jsonDecode($this->request('POST', self::ENDPOINT_PROJECTS, $projectData));
+    }
+
+    private function findProjectIriByName(string $name): string
+    {
+        return $this->findOneIriBy(Project::class, ['name' => $name]);
     }
 
     private function assertProjectHasAllAttributes(array $project): void

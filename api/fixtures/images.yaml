@@ -1,3 +1,5 @@
 App\Entity\Image:
   image_{1..5}:
     __factory: { 'App\Fixtures\ImageFactory::createImage': [<current()>]}
+  dummy_image_{1..7}:
+    __factory: { 'App\Fixtures\ImageFactory::createImage': ['dummy-<current()>']}

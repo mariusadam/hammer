@@ -1,10 +1,19 @@
 App\Entity\ProjectPhoto:
-  project_photo_1:
-    photo: "@image_2"
-    project: "@ProjectLedByRadu"
-  project_photo_2:
-    photo: "@image_3"
-    project: "@ProjectLedByRadu"
-  project_photo_4:
-    photo: "@image_4"
-    project: "@ProjectLedByDaniel"
+    project_photo_1:
+        photo: "@image_2"
+        project: "@ProjectLedByRadu"
+        shortDescription: Valid short description
+    project_photo_2:
+        photo: "@image_3"
+        project: "@ProjectLedByRadu"
+        shortDescription: Valid short description
+    project_photo_4:
+        photo: "@image_4"
+        project: "@ProjectLedByDaniel"
+        shortDescription: Valid short description
+    dummy_photo_{1..7}:
+        photo: "@dummy_image_<current()>"
+        project: "@dummy_project_<current()>"
+        shortDescription: Dummy photo short description
+        
+          

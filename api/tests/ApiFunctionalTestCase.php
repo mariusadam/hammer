@@ -5,6 +5,7 @@ namespace App\Tests;
 
 use App\Fixtures\ImageFactory;
 use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
+use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
@@ -38,6 +39,7 @@ class ApiFunctionalTestCase extends WebTestCase
 
     public static function setUpBeforeClass()
     {
+        parent::tearDownAfterClass();
         self::$filesystem = new Filesystem();
         // override image factory here to not require internet connection when running tests
         ImageFactory::setImageFilePathFactory(
@@ -55,6 +57,8 @@ class ApiFunctionalTestCase extends WebTestCase
 
     public static function tearDownAfterClass()
     {
+        parent::tearDownAfterClass();
+
         self::tearDownFixtureFiles();
         self::$filesystem = null;
         ImageFactory::unsetImageFactory();
@@ -74,7 +78,7 @@ class ApiFunctionalTestCase extends WebTestCase
         self::$filesystem->remove($testImages);
     }
 
-    final protected function setUp()
+    protected function setUp()
     {
         parent::setUp();
 
@@ -128,6 +132,38 @@ class ApiFunctionalTestCase extends WebTestCase
         return static::$container->get('api_platform.iri_converter')->getIriFromitem($resource);
     }
 
+    protected function getOneBy(string $resourceClass, array $criteria = []): array
+    {
+        $iriBy = $this->findOneIriBy($resourceClass, $criteria);
+
+        return $this->getByIri($iriBy);
+    }
+
+    protected function getByIri(string $iri): array
+    {
+        $response = $this->request('GET', $iri);
+        self::assertResponseIsSuccessful();
+
+        return $this->jsonDecode($response);
+    }
+
+    protected function assertNotFound(string $iri): void
+    {
+        $this->request('GET', $iri);
+        self::assertResponseStatusCodeSame(404);
+    }
+
+    protected function delete(string $iri): void
+    {
+        $this->request('DELETE', $iri);
+        self::assertResponseStatusCodeSame(204);
+    }
+
+    protected function putJson(string $iri, array $updatedData): array
+    {
+        return $this->jsonDecode($this->request('PUT', $iri, $updatedData));
+    }
+
     protected function hydraMember(array $json): array
     {
         $member = $this->arrayGet($json, 'hydra:member');
@@ -172,13 +208,13 @@ class ApiFunctionalTestCase extends WebTestCase
     {
         $this->assertContentType(self::APPLICATION_LD_JSON, $response);
     }
-
     protected function assertContentType(string $expected, Response $response): void
     {
         $expected .= '; charset=utf-8';
         $this->assertEquals($expected, strtolower($response->headers->get(self::CONTENT_TYPE)));
 
     }
+
     public function assertListIsNotEmpty(string $listUri): void
     {
         $response = $this->request('GET', $listUri);
