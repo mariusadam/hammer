@@ -5,6 +5,7 @@
   "dependencies": {
     "@api-platform/admin": "^0.6.1",
     "@babel/runtime": "7.0.0-beta.55",
+    "gh-pages": "^2.1.1",
     "ra-input-rich-text": "^2.9.3",
     "react": "^16.3.0",
     "react-dom": "^16.3.0",
@@ -14,8 +15,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "gh-pages -b master -d build"
   },
+  "homepage": "https://mariusadam.github.io/hammer-admin",
   "browserslist": [
     ">0.2%",
     "not dead",
