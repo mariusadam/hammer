@@ -13,7 +13,6 @@ use Symfony\Component\Serializer\Encoder\DecoderInterface;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 
 final class CreateImageObjectAction
 {
@@ -68,24 +67,30 @@ final class CreateImageObjectAction
             throw new UnsupportedMediaTypeHttpException('Image format is not supported');
         }
         [$prefix, $base64EncodedContents] = $parts;
-        if ('data:image/jpeg;base64' !== $prefix) {
-            throw new UnsupportedMediaTypeHttpException('Image format is not supported');
-        }
+        $extension = $this->getExtensionFromBase64Prefix($prefix);
+        $originalName = pathinfo($temporaryFilename, PATHINFO_BASENAME);
         file_put_contents($temporaryFilename, base64_decode($base64EncodedContents));
         unset($imageFields['imageFile']);
 
-        $exifData = exif_read_data($temporaryFilename, 'FILE');
-        if (false === $exifData) {
-            throw new UnsupportedMediaTypeHttpException('Image format is not supported');
-        }
-        [, $extension] = explode('/', $exifData['MimeType']);
-        $originalName = sprintf('%s.%s', $exifData['FileName'], $extension);
+        $originalName = sprintf('%s.%s', $originalName, $extension);
         $uploadedFile = new UploadedFile($temporaryFilename, $originalName, null, null, true);
 
         $image = $this->denormalizeImage($imageFields);
         $image->setImageFile($uploadedFile);
 
         return $image;
+    }
+
+    private function getExtensionFromBase64Prefix(string $prefix): string
+    {
+        switch ($prefix) {
+            case 'data:image/jpeg;base64':
+                return 'jpg';
+            case 'data:image/png;base64':
+                return 'png';
+            default:
+                throw new UnsupportedMediaTypeHttpException('Image format is not supported');
+        }
     }
 
     private function denormalizeImage(array $imageFields): Image
