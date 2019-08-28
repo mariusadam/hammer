@@ -3,30 +3,28 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Traits\HasIntIdentifierTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 
 /**
  * @ORM\Entity()
- * @UniqueEntity(fields={"alternateName"}, groups={"image:create", "image:update"})
+ * @UniqueEntity(fields={"alternateName"})
  * @ApiResource(
  *     iri="http://schema.org/ImageObject",
- *     normalizationContext={"groups"={"image:read"}},
  *     collectionOperations={
  *          "get"={},
  *          "post"={
  *              "controller"="App\Controller\CreateImageObjectAction",
  *              "deserialize"=false,
- *              "validation_groups"={"image:create"},
- *              "denormalization_context"={"groups"={"image:create"}},
  *              "swagger_context"={
  *                  "consumes"={
  *                      "multipart/form-data",
@@ -34,7 +32,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *                  "parameters"={
  *                      {
  *                          "in"="formData",
- *                          "name"="file",
+ *                          "name"="imageFile",
  *                          "type"="file",
  *                          "description"="The file to upload",
  *                      },
@@ -50,12 +48,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     },
  *     itemOperations={
  *          "get"={},
- *          "put"={
- *              "validation_groups"={"image:update"},
- *              "denormalization_context"={"groups"={"image:update"}}
- *          }
+ *          "put"={},
+ *          "delete"={},
  *     }
  * )
+ * @ApiFilter(DateFilter::class, properties={"uploadDate"})
  * @Vich\Uploadable()
  */
 class Image
@@ -65,8 +62,7 @@ class Image
     /**
      * @var string|null
      *
-     * @Groups({"image:read"})
-     * @ApiProperty(iri="http://schema.org/url", writable=false)
+     * @ApiProperty(iri="http://schema.org/contentUrl", writable=false)
      */
     private $contentUrl;
 
@@ -74,7 +70,6 @@ class Image
      * @var \DateTime
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
-     * @Groups({"image:read"})
      * @ApiProperty(writable=false)
      */
     private $uploadDate;
@@ -86,21 +81,15 @@ class Image
      * when the image resource is created for the first time
      *
      * @Vich\UploadableField(mapping="image", fileNameProperty="fileName")
-     * @ApiProperty()
-     * @Groups({"image:create"})
-     * @Assert\NotNull()
+     * @ApiProperty(readable=false)
      */
     private $imageFile;
 
     /**
-     * @var File
-     */
-    public $tmpImageFile;
-
-    /**
-     * @var string
+     * @var null|string
      *
      * @ORM\Column(nullable=false, unique=true)
+     * @ApiProperty(writable=false, readable=false)
      */
     private $fileName;
 
@@ -108,7 +97,6 @@ class Image
      * @var string|null An alias for the image, defaults the to image file name
      *
      * @ORM\Column(type="string", unique=true)
-     * @Groups({"image:read", "image:create", "image:update"})
      * @ApiProperty(iri="http://schema.org/name")
      */
     private $alternateName;
@@ -135,6 +123,10 @@ class Image
 
     public function setImageFile(File $file): void
     {
+        if ($file instanceof UploadedFile && null === $this->alternateName) {
+            $this->setAlternateName($file->getClientOriginalName());
+        }
+
         $this->imageFile = $file;
     }
 
@@ -143,19 +135,18 @@ class Image
         return $this->imageFile;
     }
 
-    public function getFileName(): string
+    public function getFileName(): ?string
     {
         return $this->fileName;
     }
 
-    public function setFileName(string $fileName): void
+    public function setFileName(?string $fileName): void
     {
         $this->fileName = $fileName;
     }
 
     public function getContentUrl(): string
     {
-        return $this->contentUrl ?? '';
         if (null === $this->contentUrl) {
             throw new \RuntimeException(
                 'Field "contentUrl" is not stored in the database. It\'s value should have been populated right after the image was loaded from db'

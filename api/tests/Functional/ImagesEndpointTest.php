@@ -10,18 +10,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ImagesEndpointTest extends ApiFunctionalTestCase
 {
-    public const ENDPOINT_IMAGE = '/images';
+    public const ENDPOINT_IMAGES = '/images';
 
-    public function testImageCanBeUploaded()
+    public function testImageCanBeUploadedUsingMultipartFormData()
     {
         $files = [
-            'file' => ImageFactory::createUploadedFile('testCreate'),
+            'imageFile' => ImageFactory::createUploadedFile('testCreate'),
         ];
         $postFields = ['alternateName' => 'Alternate name for this test image'];
-        $response = $this->sendCreateImageRequest($files, $postFields);
+        $image = $this->postMultipartFormData($files, $postFields);
         self::assertResponseStatusCodeSame(201);
 
-        $image = $this->jsonDecode($response);
         self::assertNotNull($image['contentUrl']);
         self::assertEquals($postFields['alternateName'], $image['alternateName']);
         self::assertStringStartsWith('http://localhost/media/images', $image['contentUrl']);
@@ -29,10 +28,9 @@ final class ImagesEndpointTest extends ApiFunctionalTestCase
 
     public function testImageNameIsUsedAsAlternateNameByDefault()
     {
-        $files = ['file' => ImageFactory::createUploadedFile('test-alternate-default')];
-        $response = $this->sendCreateImageRequest($files, []);
+        $files = ['imageFile' => ImageFactory::createUploadedFile('test-alternate-default')];
+        $image = $this->postMultipartFormData($files, []);
         self::assertResponseStatusCodeSame(201);
-        $image = $this->jsonDecode($response);
         self::assertEquals('fixture-test-alternate-default.png', $image['alternateName']);
     }
 
@@ -49,18 +47,32 @@ final class ImagesEndpointTest extends ApiFunctionalTestCase
 
     public function testImageCannotBeCreatedWithoutAFile()
     {
-        $this->sendCreateImageRequest([], []);
+        $this->postMultipartFormData([], []);
         self::assertResponseStatusCodeSame(400);
     }
 
-    protected function sendCreateImageRequest(array $files, array $postFields): Response
+    public function testCanCreateImageByPostingBase64BinaryFile(): void
+    {
+        $base64EncodedImage = base64_encode(file_get_contents(__DIR__.'/../fixtures/test-image.jpg'));
+
+        $imageData = [
+            'imageFile'     => "data:image/jpeg;base64,$base64EncodedImage",
+            'alternateName' => 'fixture-image-uploaded-base64-encoded',
+        ];
+        $response = $this->request('POST', self::ENDPOINT_IMAGES, $imageData);
+        self::assertResponseStatusCodeSame(201);
+        $image = $this->jsonDecode($response);
+        self::assertEquals('fixture-image-uploaded-base64-encoded', $image['alternateName']);
+    }
+
+    protected function postMultipartFormData(array $files, array $postFields): array
     {
         $headers = [
             self::CONTENT_TYPE => self::MULTIPART_FORM_DATA,
         ];
         $server = $this->createServer($headers);
-        $this->getBrowser()->request('POST', self::ENDPOINT_IMAGE, $postFields, $files, $server);
+        $this->getBrowser()->request('POST', self::ENDPOINT_IMAGES, $postFields, $files, $server);
 
-        return $this->getBrowser()->getResponse();
+        return $this->jsonDecode($this->getBrowser()->getResponse());
     }
 }

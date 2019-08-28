@@ -37,6 +37,8 @@ class ApiFunctionalTestCase extends WebTestCase
     /** @var Filesystem */
     private static $filesystem;
 
+    private static $filesToRemove = [];
+
     public static function setUpBeforeClass()
     {
         parent::tearDownAfterClass();
@@ -45,12 +47,14 @@ class ApiFunctionalTestCase extends WebTestCase
         ImageFactory::setImageFilePathFactory(
             function () {
                 // because the path to the files here might be remove we need to copy
-                // the fixture file to tmp an return that path
+                // the fixture file to tmp and return that path
 
-                $tmpPath = sprintf('%s.png', tempnam(sys_get_temp_dir(), 'test-image'));
-                self::$filesystem->copy(__DIR__.'/fixtures/test-image.png', $tmpPath);
+                $tmpPath = tempnam(sys_get_temp_dir(), 'test-image');
+                $tmpPathWithExtension = sprintf('%s.png', $tmpPath);
+                self::$filesystem->remove($tmpPath);
+                self::$filesystem->copy(__DIR__.'/fixtures/test-image.png', $tmpPathWithExtension);
 
-                return $tmpPath;
+                return self::$filesToRemove[] = $tmpPathWithExtension;
             }
         );
     }
@@ -75,7 +79,8 @@ class ApiFunctionalTestCase extends WebTestCase
             }
         }
 
-        self::$filesystem->remove($testImages);
+        self::$filesystem->remove($testImages + self::$filesToRemove);
+        self::$filesToRemove = [];
     }
 
     protected function setUp()

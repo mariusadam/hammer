@@ -15,7 +15,7 @@ final class ApiDocumentationTest extends ApiFunctionalTestCase
             'person'       => PeopleEndpointTest::ENDPOINT_PEOPLE,
             'project'      => ProjectsEndpointTest::ENDPOINT_PROJECTS,
             'projectPhoto' => ProjectPhotosEndpointTest::ENDPOINT_PROJECT_PHOTOS,
-            'image'        => ImagesEndpointTest::ENDPOINT_IMAGE,
+            'image'        => ImagesEndpointTest::ENDPOINT_IMAGES,
         ];
 
     public function testRetrieveTheDocumentationAsHtml(): void

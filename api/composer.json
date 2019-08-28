@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-json": "*",
+        "ext-exif": "*",
         "acelaya/doctrine-enum-type": "^2.2",
         "api-platform/api-pack": "^1.1",
         "guzzlehttp/guzzle": "^6.3",

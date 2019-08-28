@@ -35,6 +35,7 @@ RUN set -eux; \
 		intl \
 		pdo_pgsql \
 		zip \
+		exif \
 	; \
 	pecl install \
 		apcu-${APCU_VERSION} \

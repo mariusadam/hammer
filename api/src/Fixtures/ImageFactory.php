@@ -65,7 +65,15 @@ final class ImageFactory
 
     public static function isFixture(\SplFileInfo $file): bool
     {
-        return strpos($file->getFilename(), self::IMAGE_NAME_PREFIX) === 0;
+        // TODO remove prefix image-file once stable enough because that's a prefix for valid uploaded files
+        $prefixes = [self::IMAGE_NAME_PREFIX, 'image-file'];
+        foreach ($prefixes as $prefix) {
+            if (strpos($file->getFilename(), $prefix) === 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static function getDefaultImageFactory(): callable
