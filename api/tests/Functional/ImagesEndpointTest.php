@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional;
 
 use App\Entity\Image;
-use App\Fixtures\ImageFactory;
+use App\Tests\Fixtures\ImageFactory;
 use App\Tests\ApiFunctionalTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -53,7 +53,7 @@ final class ImagesEndpointTest extends ApiFunctionalTestCase
 
     public function testCanCreateImageByPostingBase64BinaryFile(): void
     {
-        $base64EncodedImage = base64_encode(file_get_contents(__DIR__.'/../fixtures/test-image.jpg'));
+        $base64EncodedImage = base64_encode(file_get_contents(__DIR__.'/../Fixtures/test-image.jpg'));
 
         $imageData = [
             'imageFile'     => "data:image/jpeg;base64,$base64EncodedImage",

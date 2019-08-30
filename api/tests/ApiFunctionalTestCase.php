@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Tests;
 
-use App\Fixtures\ImageFactory;
+use App\Tests\Fixtures\ImageFactory;
 use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -52,7 +52,7 @@ class ApiFunctionalTestCase extends WebTestCase
                 $tmpPath = tempnam(sys_get_temp_dir(), 'test-image');
                 $tmpPathWithExtension = sprintf('%s.png', $tmpPath);
                 self::$filesystem->remove($tmpPath);
-                self::$filesystem->copy(__DIR__.'/fixtures/test-image.png', $tmpPathWithExtension);
+                self::$filesystem->copy(__DIR__.'/Fixtures/test-image.png', $tmpPathWithExtension);
 
                 return self::$filesToRemove[] = $tmpPathWithExtension;
             }

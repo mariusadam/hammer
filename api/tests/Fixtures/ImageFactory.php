@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Fixtures;
+namespace App\Tests\Fixtures;
 
 use App\Entity\Image;
 use Faker\Factory;
