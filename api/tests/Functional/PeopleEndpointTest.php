@@ -23,6 +23,7 @@ final class PeopleEndpointTest extends ApiFunctionalTestCase
 
     public function testPersonEmailMustBeUnique(): void
     {
+        // a person with this email is already added by fixtures
         $response = $this->sendCreatePersonRequest('test', 'daniel@fake.com');
         self::assertResponseStatusCodeSame(400);
 
