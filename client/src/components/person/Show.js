@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { retrieve, reset } from '../../actions/building/show';
-import { del } from '../../actions/building/delete';
+import { retrieve, reset } from '../../actions/person/show';
 
 class Show extends Component {
   static propTypes = {
@@ -13,10 +12,6 @@ class Show extends Component {
     eventSource: PropTypes.instanceOf(EventSource),
     retrieve: PropTypes.func.isRequired,
     reset: PropTypes.func.isRequired,
-    deleteError: PropTypes.string,
-    deleteLoading: PropTypes.bool.isRequired,
-    deleted: PropTypes.object,
-    del: PropTypes.func.isRequired
   };
 
   componentDidMount() {
@@ -27,14 +22,7 @@ class Show extends Component {
     this.props.reset(this.props.eventSource);
   }
 
-  del = () => {
-    if (window.confirm('Are you sure you want to delete this item?'))
-      this.props.del(this.props.retrieved);
-  };
-
   render() {
-    if (this.props.deleted) return <Redirect to=".." />;
-
     const item = this.props.retrieved;
 
     return (
@@ -52,12 +40,6 @@ class Show extends Component {
             {this.props.error}
           </div>
         )}
-        {this.props.deleteError && (
-          <div className="alert alert-danger" role="alert">
-            <span className="fa fa-exclamation-triangle" aria-hidden="true" />{' '}
-            {this.props.deleteError}
-          </div>
-        )}
 
         {item && (
           <table className="table table-responsive table-striped table-hover">
@@ -73,16 +55,16 @@ class Show extends Component {
                 <td>{item['name']}</td>
               </tr>
               <tr>
-                <th scope="row">description</th>
-                <td>{item['description']}</td>
+                <th scope="row">email</th>
+                <td>{item['email']}</td>
               </tr>
               <tr>
-                <th scope="row">isPublished</th>
-                <td>{item['isPublished']}</td>
+                <th scope="row">ledProjects</th>
+                <td>{this.renderLinks('projects', item['ledProjects'])}</td>
               </tr>
               <tr>
-                <th scope="row">datePublished</th>
-                <td>{item['datePublished']}</td>
+                <th scope="row">image</th>
+                <td>{this.renderLinks('images', item['image'])}</td>
               </tr>
             </tbody>
           </table>
@@ -90,14 +72,6 @@ class Show extends Component {
         <Link to=".." className="btn btn-primary">
           Back to list
         </Link>
-        {item && (
-          <Link to={`/buildings/edit/${encodeURIComponent(item['@id'])}`}>
-            <button className="btn btn-warning">Edit</button>
-          </Link>
-        )}
-        <button onClick={this.del} className="btn btn-danger">
-          Delete
-        </button>
       </div>
     );
   }
@@ -110,24 +84,20 @@ class Show extends Component {
     }
 
     return (
-      <Link to={`../${type}/show/${encodeURIComponent(items)}`}>{items}</Link>
+      <Link to={`/${type}/show/${encodeURIComponent(items)}`}>{items}</Link>
     );
   };
 }
 
 const mapStateToProps = state => ({
-  retrieved: state.building.show.retrieved,
-  error: state.building.show.error,
-  loading: state.building.show.loading,
-  eventSource: state.building.show.eventSource,
-  deleteError: state.building.del.error,
-  deleteLoading: state.building.del.loading,
-  deleted: state.building.del.deleted
+  retrieved: state.person.show.retrieved,
+  error: state.person.show.error,
+  loading: state.person.show.loading,
+  eventSource: state.person.show.eventSource,
 });
 
 const mapDispatchToProps = dispatch => ({
   retrieve: id => dispatch(retrieve(id)),
-  del: item => dispatch(del(item)),
   reset: eventSource => dispatch(reset(eventSource))
 });
 

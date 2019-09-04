@@ -24,7 +24,7 @@ class Form extends Component {
     return (
       <div className={`form-group`}>
         <label
-          htmlFor={`building_${data.input.name}`}
+          htmlFor={`project_${data.input.name}`}
           className="form-control-label"
         >
           {data.input.name}
@@ -35,7 +35,7 @@ class Form extends Component {
           step={data.step}
           required={data.required}
           placeholder={data.placeholder}
-          id={`building_${data.input.name}`}
+          id={`project_${data.input.name}`}
         />
         {isInvalid && <div className="invalid-feedback">{data.meta.error}</div>}
       </div>
@@ -47,13 +47,6 @@ class Form extends Component {
       <form onSubmit={this.props.handleSubmit}>
         <Field
           component={this.renderField}
-          name="name"
-          type="text"
-          placeholder=""
-          required={true}
-        />
-        <Field
-          component={this.renderField}
           name="description"
           type="text"
           placeholder=""
@@ -61,9 +54,24 @@ class Form extends Component {
         />
         <Field
           component={this.renderField}
-          name="isPublished"
-          type="checkbox"
+          name="photos"
+          type="text"
           placeholder=""
+          normalize={v => v.split(',')}
+        />
+        <Field
+          component={this.renderField}
+          name="name"
+          type="text"
+          placeholder="Unique project name"
+          required={true}
+        />
+        <Field
+          component={this.renderField}
+          name="foreman"
+          type="text"
+          placeholder="The person in charge this project"
+          required={true}
         />
 
         <button type="submit" className="btn btn-success">
@@ -75,7 +83,7 @@ class Form extends Component {
 }
 
 export default reduxForm({
-  form: 'building',
+  form: 'project',
   enableReinitialize: true,
   keepDirtyOnReinitialize: true
 })(Form);

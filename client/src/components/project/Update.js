@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Form from './Form';
-import { retrieve, update, reset } from '../../actions/building/update';
-import { del } from '../../actions/building/delete';
+import { retrieve, update, reset } from '../../actions/project/update';
+import { del } from '../../actions/project/delete';
 
 class Update extends Component {
   static propTypes = {
@@ -100,17 +100,17 @@ class Update extends Component {
 }
 
 const mapStateToProps = state => ({
-  retrieved: state.building.update.retrieved,
-  retrieveError: state.building.update.retrieveError,
-  retrieveLoading: state.building.update.retrieveLoading,
-  updateError: state.building.update.updateError,
-  updateLoading: state.building.update.updateLoading,
-  deleteError: state.building.del.error,
-  deleteLoading: state.building.del.loading,
-  eventSource: state.building.update.eventSource,
-  created: state.building.create.created,
-  deleted: state.building.del.deleted,
-  updated: state.building.update.updated
+  retrieved: state.project.update.retrieved,
+  retrieveError: state.project.update.retrieveError,
+  retrieveLoading: state.project.update.retrieveLoading,
+  updateError: state.project.update.updateError,
+  updateLoading: state.project.update.updateLoading,
+  deleteError: state.project.del.error,
+  deleteLoading: state.project.del.loading,
+  eventSource: state.project.update.eventSource,
+  created: state.project.create.created,
+  deleted: state.project.del.deleted,
+  updated: state.project.update.updated
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { list, reset } from '../../actions/building/list';
+import { list, reset } from '../../actions/person/list';
 
 class List extends Component {
   static propTypes = {
@@ -10,7 +10,6 @@ class List extends Component {
     loading: PropTypes.bool.isRequired,
     error: PropTypes.string,
     eventSource: PropTypes.instanceOf(EventSource),
-    deletedItem: PropTypes.object,
     list: PropTypes.func.isRequired,
     reset: PropTypes.func.isRequired
   };
@@ -37,15 +36,10 @@ class List extends Component {
   render() {
     return (
       <div>
-        <h1>Building List</h1>
+        <h1>Person List</h1>
 
         {this.props.loading && (
           <div className="alert alert-info">Loading...</div>
-        )}
-        {this.props.deletedItem && (
-          <div className="alert alert-success">
-            {this.props.deletedItem['@id']} deleted.
-          </div>
         )}
         {this.props.error && (
           <div className="alert alert-danger">{this.props.error}</div>
@@ -62,9 +56,9 @@ class List extends Component {
             <tr>
               <th>id</th>
               <th>name</th>
-              <th>description</th>
-              <th>isPublished</th>
-              <th>datePublished</th>
+              <th>email</th>
+              <th>ledProjects</th>
+              <th>image</th>
               <th colSpan={2} />
             </tr>
           </thead>
@@ -78,19 +72,13 @@ class List extends Component {
                     </Link>
                   </th>
                   <td>{item['name']}</td>
-                  <td>{item['description']}</td>
-                  <td>{item['isPublished']}</td>
-                  <td>{item['datePublished']}</td>
+                  <td>{item['email']}</td>
+                  <td>{this.renderLinks('projects', item['ledProjects'])}</td>
+                  <td>{this.renderLinks('images', item['image'])}</td>
                   <td>
                     <Link to={`show/${encodeURIComponent(item['@id'])}`}>
                       <span className="fa fa-search" aria-hidden="true" />
                       <span className="sr-only">Show</span>
-                    </Link>
-                  </td>
-                  <td>
-                    <Link to={`edit/${encodeURIComponent(item['@id'])}`}>
-                      <span className="fa fa-pencil" aria-hidden="true" />
-                      <span className="sr-only">Edit</span>
                     </Link>
                   </td>
                 </tr>
@@ -164,10 +152,9 @@ const mapStateToProps = state => {
     retrieved,
     loading,
     error,
-    eventSource,
-    deletedItem
-  } = state.building.list;
-  return { retrieved, loading, error, eventSource, deletedItem };
+    eventSource
+  } = state.person.list;
+  return { retrieved, loading, error, eventSource };
 };
 
 const mapDispatchToProps = dispatch => ({

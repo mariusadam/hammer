@@ -1,27 +1,29 @@
 import {
   fetch,
-  extractHubURL,
   normalize,
+  extractHubURL,
   mercureSubscribe as subscribe
 } from '../../utils/dataAccess';
+import { success as deleteSuccess } from './delete';
 
 export function error(error) {
-  return { type: 'BUILDING_SHOW_ERROR', error };
+  return { type: 'PROJECT_LIST_ERROR', error };
 }
 
 export function loading(loading) {
-  return { type: 'BUILDING_SHOW_LOADING', loading };
+  return { type: 'PROJECT_LIST_LOADING', loading };
 }
 
 export function success(retrieved) {
-  return { type: 'BUILDING_SHOW_SUCCESS', retrieved };
+  return { type: 'PROJECT_LIST_SUCCESS', retrieved };
 }
 
-export function retrieve(id) {
+export function list(page = '/projects') {
   return dispatch => {
     dispatch(loading(true));
+    dispatch(error(''));
 
-    return fetch(id)
+    fetch(page)
       .then(response =>
         response
           .json()
@@ -33,7 +35,13 @@ export function retrieve(id) {
         dispatch(loading(false));
         dispatch(success(retrieved));
 
-        if (hubURL) dispatch(mercureSubscribe(hubURL, retrieved['@id']));
+        if (hubURL)
+          dispatch(
+            mercureSubscribe(
+              hubURL,
+              retrieved['hydra:member'].map(i => i['@id'])
+            )
+          );
       })
       .catch(e => {
         dispatch(loading(false));
@@ -46,15 +54,14 @@ export function reset(eventSource) {
   return dispatch => {
     if (eventSource) eventSource.close();
 
-    dispatch({ type: 'BUILDING_SHOW_RESET' });
-    dispatch(error(null));
-    dispatch(loading(false));
+    dispatch({ type: 'PROJECT_LIST_RESET' });
+    dispatch(deleteSuccess(null));
   };
 }
 
-export function mercureSubscribe(hubURL, topic) {
+export function mercureSubscribe(hubURL, topics) {
   return dispatch => {
-    const eventSource = subscribe(hubURL, [topic]);
+    const eventSource = subscribe(hubURL, topics);
     dispatch(mercureOpen(eventSource));
     eventSource.addEventListener('message', event =>
       dispatch(mercureMessage(normalize(JSON.parse(event.data))))
@@ -63,16 +70,16 @@ export function mercureSubscribe(hubURL, topic) {
 }
 
 export function mercureOpen(eventSource) {
-  return { type: 'BUILDING_SHOW_MERCURE_OPEN', eventSource };
+  return { type: 'PROJECT_LIST_MERCURE_OPEN', eventSource };
 }
 
 export function mercureMessage(retrieved) {
   return dispatch => {
     if (1 === Object.keys(retrieved).length) {
-      dispatch({ type: 'BUILDING_SHOW_MERCURE_DELETED', retrieved });
+      dispatch({ type: 'PROJECT_LIST_MERCURE_DELETED', retrieved });
       return;
     }
 
-    dispatch({ type: 'BUILDING_SHOW_MERCURE_MESSAGE', retrieved });
+    dispatch({ type: 'PROJECT_LIST_MERCURE_MESSAGE', retrieved });
   };
 }

@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 
 export function error(state = null, action) {
   switch (action.type) {
-    case 'BUILDING_CREATE_ERROR':
+    case 'PROJECT_CREATE_ERROR':
       return action.error;
 
     default:
@@ -12,7 +12,7 @@ export function error(state = null, action) {
 
 export function loading(state = false, action) {
   switch (action.type) {
-    case 'BUILDING_CREATE_LOADING':
+    case 'PROJECT_CREATE_LOADING':
       return action.loading;
 
     default:
@@ -22,7 +22,7 @@ export function loading(state = false, action) {
 
 export function created(state = null, action) {
   switch (action.type) {
-    case 'BUILDING_CREATE_SUCCESS':
+    case 'PROJECT_CREATE_SUCCESS':
       return action.created;
 
     default:

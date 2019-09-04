@@ -2,13 +2,13 @@ import { combineReducers } from 'redux';
 
 export function error(state = null, action) {
   switch (action.type) {
-    case 'BUILDING_LIST_ERROR':
+    case 'PROJECT_LIST_ERROR':
       return action.error;
 
-    case 'BUILDING_LIST_MERCURE_DELETED':
+    case 'PROJECT_LIST_MERCURE_DELETED':
       return `${action.retrieved['@id']} has been deleted by another user.`;
 
-    case 'BUILDING_LIST_RESET':
+    case 'PROJECT_LIST_RESET':
       return null;
 
     default:
@@ -18,10 +18,10 @@ export function error(state = null, action) {
 
 export function loading(state = false, action) {
   switch (action.type) {
-    case 'BUILDING_LIST_LOADING':
+    case 'PROJECT_LIST_LOADING':
       return action.loading;
 
-    case 'BUILDING_LIST_RESET':
+    case 'PROJECT_LIST_RESET':
       return false;
 
     default:
@@ -31,13 +31,13 @@ export function loading(state = false, action) {
 
 export function retrieved(state = null, action) {
   switch (action.type) {
-    case 'BUILDING_LIST_SUCCESS':
+    case 'PROJECT_LIST_SUCCESS':
       return action.retrieved;
 
-    case 'BUILDING_LIST_RESET':
+    case 'PROJECT_LIST_RESET':
       return null;
 
-    case 'BUILDING_LIST_MERCURE_MESSAGE':
+    case 'PROJECT_LIST_MERCURE_MESSAGE':
       return {
         ...state,
         'hydra:member': state['hydra:member'].map(item =>
@@ -45,7 +45,7 @@ export function retrieved(state = null, action) {
         )
       };
 
-    case 'BUILDING_LIST_MERCURE_DELETED':
+    case 'PROJECT_LIST_MERCURE_DELETED':
       return {
         ...state,
         'hydra:member': state['hydra:member'].filter(
@@ -60,10 +60,10 @@ export function retrieved(state = null, action) {
 
 export function eventSource(state = null, action) {
   switch (action.type) {
-    case 'BUILDING_LIST_MERCURE_OPEN':
+    case 'PROJECT_LIST_MERCURE_OPEN':
       return action.eventSource;
 
-    case 'BUILDING_LIST_RESET':
+    case 'PROJECT_LIST_RESET':
       return null;
 
     default:

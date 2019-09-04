@@ -6,6 +6,13 @@ import thunk from 'redux-thunk';
 import { reducer as form } from 'redux-form';
 import { Route, Switch } from 'react-router-dom';
 import createBrowserHistory from 'history/createBrowserHistory';
+
+import project from './reducers/project/';
+import person from './reducers/person/';
+
+import projectRoutes from './routes/project';
+import personRoutes from './routes/person';
+
 import {
   ConnectedRouter,
   connectRouter,
@@ -22,6 +29,8 @@ const store = createStore(
   combineReducers({
     router: connectRouter(history),
     form,
+    project,
+    person
     /* Add your reducers here */
   }),
   applyMiddleware(routerMiddleware(history), thunk)
@@ -32,7 +41,8 @@ ReactDOM.render(
     <ConnectedRouter history={history}>
       <Switch>
         <Route path="/" component={Welcome} strict={true} exact={true}/>
-        {/* Add your routes here */}
+        {projectRoutes}
+        {personRoutes}
         <Route render={() => <h1>Not Found</h1>} />
       </Switch>
     </ConnectedRouter>

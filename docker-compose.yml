@@ -95,12 +95,27 @@ services:
     ports:
       - "80:3000"
 
+  admin:
+    # Use a static website hosting service in production
+    # See https://facebook.github.io/create-react-app/docs/deployment
+    image: ${CONTAINER_REGISTRY_BASE}/admin
+    build:
+      context: ./admin
+      cache_from:
+        - ${CONTAINER_REGISTRY_BASE}/admin
+    volumes:
+      - ./admin:/usr/src/admin:rw,cached
+      - /usr/src/admin/node_modules
+    ports:
+      - "81:3000"
+
   h2-proxy:
     # Don't use this proxy in prod
     build:
       context: ./h2-proxy
     depends_on:
       - client
+      - admin
       - api
       - cache-proxy
       - mercure

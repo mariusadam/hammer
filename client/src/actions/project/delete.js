@@ -1,15 +1,15 @@
 import { fetch } from '../../utils/dataAccess';
 
 export function error(error) {
-  return { type: 'BUILDING_DELETE_ERROR', error };
+  return { type: 'PROJECT_DELETE_ERROR', error };
 }
 
 export function loading(loading) {
-  return { type: 'BUILDING_DELETE_LOADING', loading };
+  return { type: 'PROJECT_DELETE_LOADING', loading };
 }
 
 export function success(deleted) {
-  return { type: 'BUILDING_DELETE_SUCCESS', deleted };
+  return { type: 'PROJECT_DELETE_SUCCESS', deleted };
 }
 
 export function del(item) {

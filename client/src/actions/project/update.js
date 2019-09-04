@@ -9,15 +9,15 @@ import { success as createSuccess } from './create';
 import { loading, error } from './delete';
 
 export function retrieveError(retrieveError) {
-  return { type: 'BUILDING_UPDATE_RETRIEVE_ERROR', retrieveError };
+  return { type: 'PROJECT_UPDATE_RETRIEVE_ERROR', retrieveError };
 }
 
 export function retrieveLoading(retrieveLoading) {
-  return { type: 'BUILDING_UPDATE_RETRIEVE_LOADING', retrieveLoading };
+  return { type: 'PROJECT_UPDATE_RETRIEVE_LOADING', retrieveLoading };
 }
 
 export function retrieveSuccess(retrieved) {
-  return { type: 'BUILDING_UPDATE_RETRIEVE_SUCCESS', retrieved };
+  return { type: 'PROJECT_UPDATE_RETRIEVE_SUCCESS', retrieved };
 }
 
 export function retrieve(id) {
@@ -46,15 +46,15 @@ export function retrieve(id) {
 }
 
 export function updateError(updateError) {
-  return { type: 'BUILDING_UPDATE_UPDATE_ERROR', updateError };
+  return { type: 'PROJECT_UPDATE_UPDATE_ERROR', updateError };
 }
 
 export function updateLoading(updateLoading) {
-  return { type: 'BUILDING_UPDATE_UPDATE_LOADING', updateLoading };
+  return { type: 'PROJECT_UPDATE_UPDATE_LOADING', updateLoading };
 }
 
 export function updateSuccess(updated) {
-  return { type: 'BUILDING_UPDATE_UPDATE_SUCCESS', updated };
+  return { type: 'PROJECT_UPDATE_UPDATE_SUCCESS', updated };
 }
 
 export function update(item, values) {
@@ -98,7 +98,7 @@ export function reset(eventSource) {
   return dispatch => {
     if (eventSource) eventSource.close();
 
-    dispatch({ type: 'BUILDING_UPDATE_RESET' });
+    dispatch({ type: 'PROJECT_UPDATE_RESET' });
     dispatch(error(null));
     dispatch(loading(false));
     dispatch(createSuccess(null));
@@ -116,16 +116,16 @@ export function mercureSubscribe(hubURL, topic) {
 }
 
 export function mercureOpen(eventSource) {
-  return { type: 'BUILDING_UPDATE_MERCURE_OPEN', eventSource };
+  return { type: 'PROJECT_UPDATE_MERCURE_OPEN', eventSource };
 }
 
 export function mercureMessage(retrieved) {
   return dispatch => {
     if (1 === Object.keys(retrieved).length) {
-      dispatch({ type: 'BUILDING_UPDATE_MERCURE_DELETED', retrieved });
+      dispatch({ type: 'PROJECT_UPDATE_MERCURE_DELETED', retrieved });
       return;
     }
 
-    dispatch({ type: 'BUILDING_UPDATE_MERCURE_MESSAGE', retrieved });
+    dispatch({ type: 'PROJECT_UPDATE_MERCURE_MESSAGE', retrieved });
   };
 }
