@@ -45,12 +45,6 @@ class List extends Component {
           <div className="alert alert-danger">{this.props.error}</div>
         )}
 
-        <p>
-          <Link to="create" className="btn btn-primary">
-            Create
-          </Link>
-        </p>
-
         <table className="table table-responsive table-striped table-hover">
           <thead>
             <tr>

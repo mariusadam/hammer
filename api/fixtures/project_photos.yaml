@@ -15,5 +15,5 @@ App\Entity\ProjectPhoto:
         photo: "@dummy_image_<current()>"
         project: "@dummy_project_<current()>"
         shortDescription: Dummy photo short description
-        
-          
+
+

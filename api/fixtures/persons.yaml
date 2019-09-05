@@ -12,3 +12,6 @@ App\Entity\Person:
   dummy_person_{1..7}:
     name: Person<current()>
     email: dummy<current()>.<email()>
+  busy_person:
+    name: Busy Person
+    email: best.person@fake.com

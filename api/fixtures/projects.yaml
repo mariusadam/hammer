@@ -11,3 +11,7 @@ App\Entity\Project:
     name: Project<current()>
     foreman: "@dummy_person_<current()>"
     description: Dummy project led by dummy person <current()>
+  project_{1..3}_with_same_busy_foreman:
+    name: Project<current()> assigned to a busy person
+    foreman: "@busy_person"
+    description: Project <current()> led by the same busy person
