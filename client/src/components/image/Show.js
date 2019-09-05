@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { retrieve, reset } from '../../actions/project/show';
+import { retrieve, reset } from '../../actions/image/show';
+import { del } from '../../actions/image/delete';
 
 class Show extends Component {
   static propTypes = {
@@ -12,6 +13,10 @@ class Show extends Component {
     eventSource: PropTypes.instanceOf(EventSource),
     retrieve: PropTypes.func.isRequired,
     reset: PropTypes.func.isRequired,
+    deleteError: PropTypes.string,
+    deleteLoading: PropTypes.bool.isRequired,
+    deleted: PropTypes.object,
+    del: PropTypes.func.isRequired
   };
 
   componentDidMount() {
@@ -28,6 +33,8 @@ class Show extends Component {
   };
 
   render() {
+    if (this.props.deleted) return <Redirect to=".." />;
+
     const item = this.props.retrieved;
 
     return (
@@ -62,35 +69,24 @@ class Show extends Component {
             </thead>
             <tbody>
               <tr>
-                <th scope="row">description</th>
-                <td>{item['description']}</td>
+                <th scope="row">uploadDate</th>
+                <td>{item['uploadDate']}</td>
               </tr>
               <tr>
-                <th scope="row">photos</th>
-                <td>{this.renderLinks('project_photos', item['photos'])}</td>
+                <th scope="row">alternateName</th>
+                <td>{item['alternateName']}</td>
               </tr>
               <tr>
-                <th scope="row">name</th>
-                <td>{item['name']}</td>
+                <th scope="row">contentUrl</th>
+                <td><a href={item['contentUrl']}>{item['contentUrl']}</a></td>
               </tr>
               <tr>
-                <th scope="row">foreman</th>
-                <td>{this.renderLinks('people', item['foreman'])}</td>
-              </tr>
-              <tr>
-                <th scope="row">createdAt</th>
-                <td>{item['createdAt']}</td>
-              </tr>
-              <tr>
-                <th scope="row">updatedAt</th>
-                <td>{item['updatedAt']}</td>
+                <th scope="row">content</th>
+                <td><img src={item['contentUrl']} alt={item['alternateName']}/></td>
               </tr>
             </tbody>
           </table>
         )}
-        <Link to=".." className="btn btn-primary">
-          Back to list
-        </Link>
       </div>
     );
   }
@@ -103,20 +99,24 @@ class Show extends Component {
     }
 
     return (
-      <Link to={`/${type}/show/${encodeURIComponent(items)}`}>{items}</Link>
+      <Link to={`../${type}/show/${encodeURIComponent(items)}`}>{items}</Link>
     );
   };
 }
 
 const mapStateToProps = state => ({
-  retrieved: state.project.show.retrieved,
-  error: state.project.show.error,
-  loading: state.project.show.loading,
-  eventSource: state.project.show.eventSource,
+  retrieved: state.image.show.retrieved,
+  error: state.image.show.error,
+  loading: state.image.show.loading,
+  eventSource: state.image.show.eventSource,
+  deleteError: state.image.del.error,
+  deleteLoading: state.image.del.loading,
+  deleted: state.image.del.deleted
 });
 
 const mapDispatchToProps = dispatch => ({
   retrieve: id => dispatch(retrieve(id)),
+  del: item => dispatch(del(item)),
   reset: eventSource => dispatch(reset(eventSource))
 });
 

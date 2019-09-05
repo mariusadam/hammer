@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { list, reset } from '../../actions/project/list';
+import { list, reset } from '../../actions/projectphoto/list';
 
 class List extends Component {
   static propTypes = {
@@ -37,7 +37,7 @@ class List extends Component {
   render() {
     return (
       <div>
-        <h1>Project List</h1>
+        <h1>ProjectPhoto List</h1>
 
         {this.props.loading && (
           <div className="alert alert-info">Loading...</div>
@@ -51,13 +51,21 @@ class List extends Component {
           <div className="alert alert-danger">{this.props.error}</div>
         )}
 
+        <p>
+          <Link to="create" className="btn btn-primary">
+            Create
+          </Link>
+        </p>
+
         <table className="table table-responsive table-striped table-hover">
           <thead>
             <tr>
               <th>id</th>
               <th>name</th>
-              <th>photos</th>
-              <th>foreman</th>
+              <th>url</th>
+              <th>shortDescription</th>
+              <th>photo</th>
+              <th>project</th>
               <th>createdAt</th>
               <th>updatedAt</th>
               <th colSpan={2} />
@@ -73,14 +81,22 @@ class List extends Component {
                     </Link>
                   </th>
                   <td>{item['name']}</td>
-                  <td>{this.renderLinks('project_photos', item['photos'])}</td>
-                  <td>{this.renderLinks('people', item['foreman'])}</td>
+                  <td>{item['url']}</td>
+                  <td>{item['shortDescription']}</td>
+                  <td>{this.renderLinks('images', item['photo'])}</td>
+                  <td>{this.renderLinks('projects', item['project'])}</td>
                   <td>{item['createdAt']}</td>
                   <td>{item['updatedAt']}</td>
                   <td>
                     <Link to={`show/${encodeURIComponent(item['@id'])}`}>
                       <span className="fa fa-search" aria-hidden="true" />
                       <span className="sr-only">Show</span>
+                    </Link>
+                  </td>
+                  <td>
+                    <Link to={`edit/${encodeURIComponent(item['@id'])}`}>
+                      <span className="fa fa-pencil" aria-hidden="true" />
+                      <span className="sr-only">Edit</span>
                     </Link>
                   </td>
                 </tr>
@@ -156,7 +172,7 @@ const mapStateToProps = state => {
     error,
     eventSource,
     deletedItem
-  } = state.project.list;
+  } = state.projectphoto.list;
   return { retrieved, loading, error, eventSource, deletedItem };
 };
 

@@ -8,10 +8,14 @@ import { Route, Switch } from 'react-router-dom';
 import createBrowserHistory from 'history/createBrowserHistory';
 
 import project from './reducers/project/';
+import projectphoto from './reducers/projectphoto/';
 import person from './reducers/person/';
+import image from "./reducers/image/";
 
 import projectRoutes from './routes/project';
 import personRoutes from './routes/person';
+import projectphotoRoutes from './routes/projectphoto';
+import imageRoutes from './routes/image';
 
 import {
   ConnectedRouter,
@@ -29,7 +33,9 @@ const store = createStore(
     router: connectRouter(history),
     form,
     project,
-    person
+    person,
+    projectphoto,
+    image
     /* Add your reducers here */
   }),
   applyMiddleware(routerMiddleware(history), thunk)
@@ -42,6 +48,8 @@ ReactDOM.render(
         <Route path="/" component={Welcome} strict={true} exact={true}/>
         {projectRoutes}
         {personRoutes}
+        {projectphotoRoutes}
+        {imageRoutes}
         <Route render={() => <h1>Not Found</h1>} />
       </Switch>
     </ConnectedRouter>

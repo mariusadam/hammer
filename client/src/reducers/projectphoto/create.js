@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 
 export function error(state = null, action) {
   switch (action.type) {
-    case 'PROJECT_DELETE_ERROR':
+    case 'PROJECTPHOTO_CREATE_ERROR':
       return action.error;
 
     default:
@@ -12,7 +12,7 @@ export function error(state = null, action) {
 
 export function loading(state = false, action) {
   switch (action.type) {
-    case 'PROJECT_DELETE_LOADING':
+    case 'PROJECTPHOTO_CREATE_LOADING':
       return action.loading;
 
     default:
@@ -20,14 +20,14 @@ export function loading(state = false, action) {
   }
 }
 
-export function deleted(state = null, action) {
+export function created(state = null, action) {
   switch (action.type) {
-    case 'PROJECT_DELETE_SUCCESS':
-      return action.deleted;
+    case 'PROJECTPHOTO_CREATE_SUCCESS':
+      return action.created;
 
     default:
       return state;
   }
 }
 
-export default combineReducers({ error, loading, deleted });
+export default combineReducers({ error, loading, created });

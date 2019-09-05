@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { retrieve, reset } from '../../actions/project/show';
+import { retrieve, reset } from '../../actions/projectphoto/show';
 
 class Show extends Component {
   static propTypes = {
@@ -45,12 +45,6 @@ class Show extends Component {
             {this.props.error}
           </div>
         )}
-        {this.props.deleteError && (
-          <div className="alert alert-danger" role="alert">
-            <span className="fa fa-exclamation-triangle" aria-hidden="true" />{' '}
-            {this.props.deleteError}
-          </div>
-        )}
 
         {item && (
           <table className="table table-responsive table-striped table-hover">
@@ -62,20 +56,20 @@ class Show extends Component {
             </thead>
             <tbody>
               <tr>
-                <th scope="row">description</th>
-                <td>{item['description']}</td>
-              </tr>
-              <tr>
-                <th scope="row">photos</th>
-                <td>{this.renderLinks('project_photos', item['photos'])}</td>
-              </tr>
-              <tr>
                 <th scope="row">name</th>
                 <td>{item['name']}</td>
               </tr>
               <tr>
-                <th scope="row">foreman</th>
-                <td>{this.renderLinks('people', item['foreman'])}</td>
+                <th scope="row">shortDescription</th>
+                <td>{item['shortDescription']}</td>
+              </tr>
+              <tr>
+                <th scope="row">photo</th>
+                <td><img src={item['url']} alt={item['name']}/></td>
+              </tr>
+              <tr>
+                <th scope="row">project</th>
+                <td>{this.renderLinks('projects', item['project'])}</td>
               </tr>
               <tr>
                 <th scope="row">createdAt</th>
@@ -88,9 +82,6 @@ class Show extends Component {
             </tbody>
           </table>
         )}
-        <Link to=".." className="btn btn-primary">
-          Back to list
-        </Link>
       </div>
     );
   }
@@ -109,10 +100,10 @@ class Show extends Component {
 }
 
 const mapStateToProps = state => ({
-  retrieved: state.project.show.retrieved,
-  error: state.project.show.error,
-  loading: state.project.show.loading,
-  eventSource: state.project.show.eventSource,
+  retrieved: state.projectphoto.show.retrieved,
+  error: state.projectphoto.show.error,
+  loading: state.projectphoto.show.loading,
+  eventSource: state.projectphoto.show.eventSource,
 });
 
 const mapDispatchToProps = dispatch => ({

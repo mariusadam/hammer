@@ -2,13 +2,13 @@ import { combineReducers } from 'redux';
 
 export function retrieveError(state = null, action) {
   switch (action.type) {
-    case 'PROJECT_UPDATE_RETRIEVE_ERROR':
+    case 'PROJECTPHOTO_UPDATE_RETRIEVE_ERROR':
       return action.retrieveError;
 
-    case 'PROJECT_UPDATE_MERCURE_DELETED':
+    case 'PROJECTPHOTO_UPDATE_MERCURE_DELETED':
       return `${action.retrieved['@id']} has been deleted by another user.`;
 
-    case 'PROJECT_UPDATE_RESET':
+    case 'PROJECTPHOTO_UPDATE_RESET':
       return null;
 
     default:
@@ -18,10 +18,10 @@ export function retrieveError(state = null, action) {
 
 export function retrieveLoading(state = false, action) {
   switch (action.type) {
-    case 'PROJECT_UPDATE_RETRIEVE_LOADING':
+    case 'PROJECTPHOTO_UPDATE_RETRIEVE_LOADING':
       return action.retrieveLoading;
 
-    case 'PROJECT_UPDATE_RESET':
+    case 'PROJECTPHOTO_UPDATE_RESET':
       return false;
 
     default:
@@ -31,11 +31,11 @@ export function retrieveLoading(state = false, action) {
 
 export function retrieved(state = null, action) {
   switch (action.type) {
-    case 'PROJECT_UPDATE_RETRIEVE_SUCCESS':
-    case 'PROJECT_UPDATE_MERCURE_MESSAGE':
+    case 'PROJECTPHOTO_UPDATE_RETRIEVE_SUCCESS':
+    case 'PROJECTPHOTO_UPDATE_MERCURE_MESSAGE':
       return action.retrieved;
 
-    case 'PROJECT_UPDATE_RESET':
+    case 'PROJECTPHOTO_UPDATE_RESET':
       return null;
 
     default:
@@ -45,10 +45,10 @@ export function retrieved(state = null, action) {
 
 export function updateError(state = null, action) {
   switch (action.type) {
-    case 'PROJECT_UPDATE_UPDATE_ERROR':
+    case 'PROJECTPHOTO_UPDATE_UPDATE_ERROR':
       return action.updateError;
 
-    case 'PROJECT_UPDATE_RESET':
+    case 'PROJECTPHOTO_UPDATE_RESET':
       return null;
 
     default:
@@ -58,10 +58,10 @@ export function updateError(state = null, action) {
 
 export function updateLoading(state = false, action) {
   switch (action.type) {
-    case 'PROJECT_UPDATE_UPDATE_LOADING':
+    case 'PROJECTPHOTO_UPDATE_UPDATE_LOADING':
       return action.updateLoading;
 
-    case 'PROJECT_UPDATE_RESET':
+    case 'PROJECTPHOTO_UPDATE_RESET':
       return false;
 
     default:
@@ -71,10 +71,10 @@ export function updateLoading(state = false, action) {
 
 export function updated(state = null, action) {
   switch (action.type) {
-    case 'PROJECT_UPDATE_UPDATE_SUCCESS':
+    case 'PROJECTPHOTO_UPDATE_UPDATE_SUCCESS':
       return action.updated;
 
-    case 'PROJECT_UPDATE_RESET':
+    case 'PROJECTPHOTO_UPDATE_RESET':
       return null;
 
     default:
@@ -84,10 +84,10 @@ export function updated(state = null, action) {
 
 export function eventSource(state = null, action) {
   switch (action.type) {
-    case 'PROJECT_UPDATE_MERCURE_OPEN':
+    case 'PROJECTPHOTO_UPDATE_MERCURE_OPEN':
       return action.eventSource;
 
-    case 'PROJECT_UPDATE_RESET':
+    case 'PROJECTPHOTO_UPDATE_RESET':
       return null;
 
     default:
